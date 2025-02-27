@@ -1,4 +1,6 @@
 from collections import Counter
+
+
 def parseInput(filename: str) -> tuple[list[int], list[int]]:
     first_list = []
     second_list = []
@@ -38,7 +40,7 @@ def solve_part2(first_list, second_list):
     return similarity_score
 
 if __name__ == "__main__":
-    filename = "day1_input.txt"
+    filename = "../inputs/day1_input.txt"
     first_list, second_list = parseInput(filename)
 
     print(solve_part2(first_list, second_list))
