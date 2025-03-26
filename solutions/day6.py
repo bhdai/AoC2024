@@ -28,19 +28,16 @@ def part1(map):
             visisted.add((i,j))
     return len(visisted)
 
-def simulation_guard_movement(map, rows, cols, obstacle_pos):
-    # convert the map into grid for modification
-    grid = [list(row) for row in map]
-    
-    i, j = obstacle_pos
-    if grid[i][j] != '.': return None
-    grid[i][j] = '#'
+def simulation_guard_movement(map, rows, cols, guard_pos, obstacle_pos):
+    ox, oy = obstacle_pos
 
-    # find the guard starting position
-    i, j = find_guard_position(grid, rows, cols, DIRECTION_MAP)
-    start_pos = (i, j)
-    if obstacle_pos == start_pos:  return None # Don't allow obstacle at guard's position
-    dr = DIRECTIONS.index(grid[i][j])
+    if map[ox][oy] != '.' or obstacle_pos == guard_pos: return None
+
+    obstacles = { (x, y) for x in range(rows) for y in range(cols) if map[x][y] == '#' }
+    obstacles.add(obstacle_pos)
+
+    i, j = guard_pos
+    dr = DIRECTIONS.index(map[i][j])
 
     visisted = set()
     path = []
@@ -53,17 +50,18 @@ def simulation_guard_movement(map, rows, cols, obstacle_pos):
         path.append((i,j))
         next_i, next_j = i + DIRECTION_MAP[DIRECTIONS[dr]][0], j + DIRECTION_MAP[DIRECTIONS[dr]][1]
         if not (0 <= next_i < rows and 0 <= next_j < cols): return None
-        if grid[next_i][next_j] == '#': dr = (dr + 1) % 4
+        if (next_i, next_j) in obstacles: dr = (dr + 1) % 4
         else: i, j = next_i, next_j
 
 def part2(map):
     rows, cols = len(map), len(map[0])
     valid_position = []
+    guard_pos = find_guard_position(map, rows, cols, DIRECTION_MAP)
 
     for i in range(rows):
         for j in range(cols):
             if map[i][j] == '.':
-                path = simulation_guard_movement(map, rows, cols, (i,j))
+                path = simulation_guard_movement(map, rows, cols, guard_pos, (i,j))
                 if path is not None: valid_position.append((i,j))
     return len(valid_position)
 
